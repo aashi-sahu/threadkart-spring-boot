@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${product.name})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a th:href="@{/shop}">Shop</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/shop(category=${product.category.id})}" th:text="${product.category.name}">Category</a></li>
+            <li class="breadcrumb-item active" aria-current="page" th:text="${product.name}">Product</li>
+        </ol>
+    </nav>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="row g-4 g-lg-5">
+        <div class="col-md-6">
+            <div class="product-photo">
+                <img th:if="${product.imageId != null}" th:src="@{/product-images/{id}(id=${product.imageId})}" th:alt="${product.name}">
+                <span th:if="${product.imageId == null}" class="no-image"><i class="bi bi-image"></i></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <small class="text-muted text-uppercase" th:text="${product.category.name}">Category</small>
+            <h1 class="product-title" th:text="${product.name}">Product name</h1>
+            <div class="price fs-3 mb-2" th:text="'₹' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 0, 'POINT')}">₹499</div>
+            <p class="small mb-4">
+                <span th:if="${!product.inStock}" class="text-danger fw-semibold">Out of stock</span>
+                <span th:if="${product.inStock and product.stock lt 5}" class="text-warning-emphasis fw-semibold"
+                      th:text="'Hurry, only ' + ${product.stock} + ' left'">Only 3 left</span>
+                <span th:if="${product.stock ge 5}" class="text-success">In stock</span>
+            </p>
+
+            <form th:action="@{/cart/add}" method="post" th:if="${product.inStock}">
+                <input type="hidden" name="productId" th:value="${product.id}">
+
+                <div class="mb-3" th:if="${!product.sizeList.isEmpty()}">
+                    <div class="small fw-semibold mb-2">Size</div>
+                    <div class="size-picker">
+                        <th:block th:each="s, st : ${product.sizeList}">
+                            <input type="radio" class="btn-check" name="size" th:id="'size' + ${st.index}" th:value="${s}" required>
+                            <label class="btn btn-outline-dark" th:for="'size' + ${st.index}" th:text="${s}">M</label>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 align-items-center mb-4">
+                    <select name="qty" class="form-select w-auto" aria-label="Quantity">
+                        <option th:each="n : ${#numbers.sequence(1, product.stock lt 5 ? product.stock : 5)}" th:value="${n}" th:text="${n}">1</option>
+                    </select>
+                    <button type="submit" class="btn btn-dark px-4"><i class="bi bi-bag-plus"></i> Add to cart</button>
+                </div>
+            </form>
+
+            <h6>About this item</h6>
+            <p class="text-muted" th:text="${product.description}">Description</p>
+            <ul class="small text-muted list-unstyled">
+                <li><i class="bi bi-truck"></i> Free delivery above ₹999</li>
+                <li><i class="bi bi-cash"></i> Cash on delivery available</li>
+            </ul>
+        </div>
+    </div>
+
+    <section class="mt-5" th:if="${!related.isEmpty()}">
+        <h2 class="section-title">You might also like</h2>
+        <div class="row g-3 g-md-4">
+            <div class="col-6 col-md-3" th:each="p : ${related}">
+                <div th:replace="~{fragments/layout :: productCard(${p})}"></div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

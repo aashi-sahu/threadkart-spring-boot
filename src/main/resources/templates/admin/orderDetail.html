@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Order ' + ${order.orderNumber})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<nav th:replace="~{fragments/layout :: adminNav('orders')}"></nav>
+
+<main class="container py-4">
+    <a th:href="@{/admin/orders}" class="small">&larr; All orders</a>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-1 mb-3">
+        <div>
+            <h1 class="h4 mb-0">Order <span th:text="${order.orderNumber}">TK</span></h1>
+            <small class="text-muted" th:text="${order.user.email} + ' · ' + ${#temporals.format(order.createdAt, 'dd MMM yyyy, hh:mm a')}">email</small>
+        </div>
+        <form th:action="@{/admin/orders/{n}/status(n=${order.orderNumber})}" method="post" class="d-flex gap-2"
+              th:unless="${order.status.name() == 'CANCELLED'}">
+            <select name="status" class="form-select form-select-sm" aria-label="Order status">
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == order.status}">PLACED</option>
+            </select>
+            <button type="submit" class="btn btn-dark btn-sm text-nowrap">Update status</button>
+        </form>
+        <span th:if="${order.status.name() == 'CANCELLED'}" class="status status-cancelled fs-6">CANCELLED</span>
+    </div>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div th:replace="~{fragments/order :: orderBody}"></div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

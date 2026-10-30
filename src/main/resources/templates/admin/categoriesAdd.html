@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Category')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<nav th:replace="~{fragments/layout :: adminNav('categories')}"></nav>
+
+<main class="container py-4" style="max-width: 520px">
+    <a th:href="@{/admin/categories}" class="small">&larr; Back to categories</a>
+    <h1 class="h4 mt-2 mb-3" th:text="${category.id == null} ? 'New category' : 'Edit category'">New category</h1>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <form th:action="@{/admin/categories/add}" method="post" th:object="${category}" class="panel">
+        <input type="hidden" th:field="*{id}">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control mb-3" th:field="*{name}" id="name" required maxlength="60" placeholder="e.g. Kurtas">
+        <button type="submit" class="btn btn-dark">Save</button>
+    </form>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

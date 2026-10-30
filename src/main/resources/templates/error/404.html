@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Not found')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-5 text-center">
+    <p class="display-4 brand mb-0">404</p>
+    <h1 class="h4" th:if="${message != null and #strings.startsWith(message, 'Product')}" th:text="${message}">Product not found</h1>
+    <h1 class="h4" th:unless="${message != null and #strings.startsWith(message, 'Product')}">We couldn't find that page</h1>
+    <p class="text-muted">It may have been moved or removed.</p>
+    <a th:href="@{/shop}" class="btn btn-dark">Back to the shop</a>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

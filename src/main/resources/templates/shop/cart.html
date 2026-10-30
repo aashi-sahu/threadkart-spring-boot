@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Your cart')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <h1 class="h3 mb-3">Your cart</h1>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div th:if="${cart.empty}" class="empty-state">
+        <i class="bi bi-bag"></i>
+        <p>Your cart is empty.</p>
+        <a th:href="@{/shop}" class="btn btn-dark">Browse products</a>
+    </div>
+
+    <div class="row g-4" th:unless="${cart.empty}">
+        <div class="col-lg-8">
+            <div class="panel">
+                <div class="cart-row" th:each="item : ${cart.items}">
+                    <a th:href="@{/shop/product/{id}(id=${item.product.id})}" class="cart-thumb">
+                        <img th:if="${item.product.imageId != null}" th:src="@{/product-images/{id}(id=${item.product.imageId})}" th:alt="${item.product.name}">
+                    </a>
+                    <div class="flex-grow-1">
+                        <a th:href="@{/shop/product/{id}(id=${item.product.id})}" class="fw-semibold text-reset" th:text="${item.product.name}">Name</a>
+                        <div class="small text-muted">
+                            <span th:if="${item.size != null}" th:text="'Size ' + ${item.size} + ' · '">Size M ·</span>
+                            <span th:text="'₹' + ${#numbers.formatDecimal(item.product.price, 1, 'COMMA', 0, 'POINT')} + ' each'">₹499 each</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 mt-2">
+                            <form th:action="@{/cart/update}" method="post" class="d-flex align-items-center gap-2">
+                                <input type="hidden" name="key" th:value="${item.key}">
+                                <select name="qty" class="form-select form-select-sm w-auto" onchange="this.form.submit()" aria-label="Quantity">
+                                    <option th:each="n : ${#numbers.sequence(1, item.product.stock lt 10 ? item.product.stock : 10)}"
+                                            th:value="${n}" th:text="${n}" th:selected="${n == item.quantity}">1</option>
+                                </select>
+                                <noscript><button class="btn btn-sm btn-outline-secondary">Update</button></noscript>
+                            </form>
+                            <form th:action="@{/cart/remove}" method="post">
+                                <input type="hidden" name="key" th:value="${item.key}">
+                                <button type="submit" class="btn btn-link btn-sm text-danger p-0">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="fw-semibold text-nowrap" th:text="'₹' + ${#numbers.formatDecimal(item.lineTotal, 1, 'COMMA', 0, 'POINT')}">₹998</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="panel">
+                <h2 class="h6 mb-3">Order summary</h2>
+                <div th:replace="~{fragments/order :: summary}"></div>
+                <a th:href="@{/checkout}" class="btn btn-dark w-100 mt-3">Checkout</a>
+                <a th:href="@{/shop}" class="btn btn-link w-100 btn-sm mt-1">Continue shopping</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

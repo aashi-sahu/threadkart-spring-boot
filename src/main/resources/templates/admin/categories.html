@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Categories')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<nav th:replace="~{fragments/layout :: adminNav('categories')}"></nav>
+
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 mb-0">Categories</h1>
+        <a th:href="@{/admin/categories/add}" class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i> Add category</a>
+    </div>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="panel p-0 overflow-hidden">
+        <table class="table mb-0 align-middle">
+            <thead>
+            <tr><th>#</th><th>Name</th><th class="text-end">Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:if="${categories.isEmpty()}"><td colspan="3" class="text-muted">No categories yet.</td></tr>
+            <tr th:each="category, iStat : ${categories}">
+                <td th:text="${iStat.count}">1</td>
+                <td th:text="${category.name}">T-Shirts</td>
+                <td class="text-end text-nowrap">
+                    <a th:href="@{/admin/categories/update/{id}(id=${category.id})}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                    <form th:action="@{/admin/categories/delete/{id}(id=${category.id})}" method="post" class="d-inline"
+                          onsubmit="return confirm('Delete this category?')">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

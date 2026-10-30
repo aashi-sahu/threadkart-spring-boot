@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Products')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<nav th:replace="~{fragments/layout :: adminNav('products')}"></nav>
+
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 mb-0">Products</h1>
+        <a th:href="@{/admin/products/add}" class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i> Add product</a>
+    </div>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="panel p-0 table-responsive">
+        <table class="table mb-0 align-middle">
+            <thead>
+            <tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th class="text-end">Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:if="${products.isEmpty()}"><td colspan="6" class="text-muted">No products yet.</td></tr>
+            <tr th:each="product : ${products}">
+                <td style="width: 64px">
+                    <img th:if="${product.imageId != null}" th:src="@{/product-images/{id}(id=${product.imageId})}" class="admin-thumb" alt="">
+                </td>
+                <td><a th:href="@{/shop/product/{id}(id=${product.id})}" th:text="${product.name}" class="text-reset">name</a></td>
+                <td th:text="${product.category.name}">cat</td>
+                <td th:text="'₹' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 0, 'POINT')}">₹0</td>
+                <td><span th:text="${product.stock}" th:classappend="${product.stock lt 5} ? 'text-danger fw-semibold'">0</span></td>
+                <td class="text-end text-nowrap">
+                    <a th:href="@{/admin/products/update/{id}(id=${product.id})}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                    <form th:action="@{/admin/products/delete/{id}(id=${product.id})}" method="post" class="d-inline"
+                          onsubmit="return confirm('Delete this product? Past orders will keep their copy.')">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

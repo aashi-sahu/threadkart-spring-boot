@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Clothes you will actually wear')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-6">
+                    <p class="eyebrow">New stock every week</p>
+                    <h1>Everyday clothes, fair prices, no fuss.</h1>
+                    <p class="lead text-muted">Tees, shirts, denim and winterwear. Free delivery on orders above ₹999.</p>
+                    <a th:href="@{/shop}" class="btn btn-dark btn-lg px-4">Start shopping</a>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-grid">
+                        <a th:each="p, s : ${products}" th:if="${s.index lt 4 and p.imageId != null}"
+                           th:href="@{/shop/product/{id}(id=${p.id})}">
+                            <img th:src="@{/product-images/{id}(id=${p.imageId})}" th:alt="${p.name}">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container" th:insert="~{fragments/layout :: flash}"></div>
+
+    <section class="container py-4" th:if="${!categories.isEmpty()}">
+        <h2 class="section-title">Shop by category</h2>
+        <div class="category-pills">
+            <a th:each="c : ${categories}" th:href="@{/shop(category=${c.id})}" th:text="${c.name}">T-Shirts</a>
+        </div>
+    </section>
+
+    <section class="container pb-5">
+        <div class="d-flex justify-content-between align-items-end mb-3">
+            <h2 class="section-title mb-0">Just added</h2>
+            <a th:href="@{/shop}" class="small">See everything &rarr;</a>
+        </div>
+        <p th:if="${products.isEmpty()}" class="text-muted">No products yet. Log in as admin and add a few.</p>
+        <div class="row g-3 g-md-4">
+            <div class="col-6 col-md-4 col-lg-3" th:each="p : ${products}">
+                <div th:replace="~{fragments/layout :: productCard(${p})}"></div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

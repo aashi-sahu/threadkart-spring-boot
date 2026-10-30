@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<nav th:replace="~{fragments/layout :: adminNav('home')}"></nav>
+
+<main class="container py-4">
+    <h1 class="h4 mb-3">Dashboard</h1>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="stat"><span>Revenue</span><strong th:text="'₹' + ${#numbers.formatDecimal(revenue, 1, 'COMMA', 0, 'POINT')}">₹0</strong><small>excluding cancelled</small></div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a class="stat" th:href="@{/admin/orders(status='PLACED')}"><span>To ship</span><strong th:text="${pendingCount}">0</strong><small th:text="${orderCount} + ' orders in total'">0 orders</small></a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a class="stat" th:href="@{/admin/products}"><span>Products</span><strong th:text="${productCount}">0</strong><small th:text="${lowStock.size()} + ' running low'">0 low</small></a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat"><span>Customers</span><strong th:text="${userCount}">0</strong><small>registered accounts</small></div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="panel p-0 overflow-hidden">
+                <div class="d-flex justify-content-between align-items-center px-3 pt-3 pb-2">
+                    <h2 class="h6 mb-0">Recent orders</h2>
+                    <a th:href="@{/admin/orders}" class="small">View all</a>
+                </div>
+                <p th:if="${recentOrders.isEmpty()}" class="text-muted small px-3">No orders yet.</p>
+                <a th:each="o : ${recentOrders}" th:href="@{/admin/orders/{n}(n=${o.orderNumber})}" class="order-row">
+                    <div>
+                        <div class="fw-semibold" th:text="${o.orderNumber}">TK</div>
+                        <small class="text-muted" th:text="${o.fullName} + ' · ' + ${#temporals.format(o.createdAt, 'dd MMM, hh:mm a')}">name</small>
+                    </div>
+                    <div class="text-end">
+                        <div th:text="'₹' + ${#numbers.formatDecimal(o.total, 1, 'COMMA', 0, 'POINT')}">₹0</div>
+                        <span class="status" th:classappend="'status-' + ${#strings.toLowerCase(o.status)}" th:text="${o.status}">PLACED</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="panel">
+                <h2 class="h6">Low stock (under 5)</h2>
+                <p th:if="${lowStock.isEmpty()}" class="text-muted small mb-0">All good, nothing is running low.</p>
+                <div th:each="p : ${lowStock}" class="d-flex justify-content-between small py-1 border-bottom">
+                    <a th:href="@{/admin/products/update/{id}(id=${p.id})}" th:text="${p.name}">name</a>
+                    <span th:classappend="${p.stock == 0} ? 'text-danger fw-semibold'" th:text="${p.stock} + ' left'">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

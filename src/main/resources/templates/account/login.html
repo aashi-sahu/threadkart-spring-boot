@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Login')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-5">
+    <div class="auth-box">
+        <h1 class="h3">Welcome back</h1>
+        <p class="text-muted">Log in to check out and track your orders.</p>
+
+        <div th:replace="~{fragments/layout :: flash}"></div>
+        <div th:if="${param.error}" class="alert alert-danger">Wrong email or password.</div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" id="email" class="form-control" required autofocus>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" id="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-dark w-100">Log in</button>
+        </form>
+        <p class="small mt-3 mb-0">New here? <a th:href="@{/register}">Create an account</a></p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

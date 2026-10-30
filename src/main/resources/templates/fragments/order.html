@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- price summary, reused on the checkout page -->
+<th:block th:fragment="summary">
+    <div class="summary-line"><span>Subtotal</span><span th:text="'₹' + ${#numbers.formatDecimal(cart.subtotal, 1, 'COMMA', 0, 'POINT')}">₹0</span></div>
+    <div class="summary-line">
+        <span>Delivery</span>
+        <span th:if="${cart.shipping.signum() == 0}" class="text-success">Free</span>
+        <span th:unless="${cart.shipping.signum() == 0}" th:text="'₹' + ${#numbers.formatDecimal(cart.shipping, 1, 'COMMA', 0, 'POINT')}">₹49</span>
+    </div>
+    <p class="small text-muted mb-2" th:if="${cart.amountForFreeShipping.signum() gt 0}"
+       th:text="'Add ₹' + ${#numbers.formatDecimal(cart.amountForFreeShipping, 1, 'COMMA', 0, 'POINT')} + ' more for free delivery'">Add ₹200 more</p>
+    <div class="summary-line total"><span>Total</span><span th:text="'₹' + ${#numbers.formatDecimal(cart.total, 1, 'COMMA', 0, 'POINT')}">₹0</span></div>
+</th:block>
+
+<!-- items + address + totals, also used on the admin order page -->
+<div th:fragment="orderBody" class="row g-4">
+    <div class="col-lg-8">
+        <div class="panel">
+            <div class="cart-row" th:each="item : ${order.items}">
+                <div class="cart-thumb">
+                    <img th:if="${item.imageId != null}" th:src="@{/product-images/{id}(id=${item.imageId})}" th:alt="${item.productName}">
+                </div>
+                <div class="flex-grow-1">
+                    <div class="fw-semibold" th:text="${item.productName}">Product</div>
+                    <small class="text-muted">
+                        <span th:if="${item.size != null}" th:text="'Size ' + ${item.size} + ' · '"></span>
+                        <span th:text="'Qty ' + ${item.quantity} + ' × ₹' + ${#numbers.formatDecimal(item.unitPrice, 1, 'COMMA', 0, 'POINT')}">Qty 1</span>
+                    </small>
+                </div>
+                <div class="fw-semibold" th:text="'₹' + ${#numbers.formatDecimal(item.lineTotal, 1, 'COMMA', 0, 'POINT')}">₹0</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="panel mb-3">
+            <h3 class="h6">Deliver to</h3>
+            <p class="mb-0 small">
+                <strong th:text="${order.fullName}">Name</strong><br>
+                <span th:text="${order.addressLine1}"></span><br>
+                <th:block th:if="${order.addressLine2 != null and !order.addressLine2.isBlank()}"><span th:text="${order.addressLine2}"></span><br></th:block>
+                <span th:text="${order.city} + ', ' + ${order.state} + ' - ' + ${order.pincode}"></span><br>
+                <span th:text="'Phone: ' + ${order.phone}"></span>
+            </p>
+        </div>
+        <div class="panel">
+            <div class="summary-line"><span>Subtotal</span><span th:text="'₹' + ${#numbers.formatDecimal(order.subtotal, 1, 'COMMA', 0, 'POINT')}">₹0</span></div>
+            <div class="summary-line"><span>Delivery</span>
+                <span th:text="${order.shippingCharge.signum() == 0} ? 'Free' : '₹' + ${#numbers.formatDecimal(order.shippingCharge, 1, 'COMMA', 0, 'POINT')}">Free</span></div>
+            <div class="summary-line total"><span>Total</span><span th:text="'₹' + ${#numbers.formatDecimal(order.total, 1, 'COMMA', 0, 'POINT')}">₹0</span></div>
+            <small class="text-muted" th:text="'Payment: ' + ${order.paymentMethod}">Payment: COD</small>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My orders')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <h1 class="h3 mb-3">My orders</h1>
+
+    <div th:if="${orders.isEmpty()}" class="empty-state">
+        <i class="bi bi-receipt"></i>
+        <p>You haven't ordered anything yet.</p>
+        <a th:href="@{/shop}" class="btn btn-dark">Start shopping</a>
+    </div>
+
+    <div class="panel p-0 overflow-hidden" th:unless="${orders.isEmpty()}">
+        <a th:each="o : ${orders}" th:href="@{/orders/{n}(n=${o.orderNumber})}" class="order-row">
+            <div>
+                <div class="fw-semibold" th:text="${o.orderNumber}">TK-0000</div>
+                <small class="text-muted" th:text="${#temporals.format(o.createdAt, 'dd MMM yyyy, hh:mm a')} + ' · ' + ${o.itemCount} + ' item(s)'">date</small>
+            </div>
+            <div class="text-end">
+                <div class="fw-semibold" th:text="'₹' + ${#numbers.formatDecimal(o.total, 1, 'COMMA', 0, 'POINT')}">₹0</div>
+                <span class="status" th:classappend="'status-' + ${#strings.toLowerCase(o.status)}" th:text="${o.status}">PLACED</span>
+            </div>
+        </a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
