@@ -20,5 +20,6 @@ data/
 .vscode/
 
 .env
+.env.*
 *.log
 .DS_Store

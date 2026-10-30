@@ -90,6 +90,8 @@ Open http://localhost:8086. On the first start the app creates the admin account
 
 ## Deploying for free (Render + Aiven MySQL)
 
+**Important:** Set the Render `DB_URL` environment variable in JDBC format: `jdbc:mysql://HOST:PORT/defaultdb?sslMode=REQUIRED`. Do not use Aiven's `mysql://` connection URI. Set `DB_USERNAME` and `DB_PASSWORD` separately. Render does not load `.env` files; configure these in the service's **Environment** settings. Render sets `PORT` automatically.
+
 1. **Database:** create a free MySQL service on [Aiven](https://aiven.io/free-mysql-database). From its overview page copy the host, port, user and password. The JDBC url looks like
    `jdbc:mysql://HOST:PORT/defaultdb?sslMode=REQUIRED`
 2. **App:** on [Render](https://render.com), choose New → Web Service, connect this GitHub repo. Render finds the `Dockerfile` by itself. Choose the Free instance type.
